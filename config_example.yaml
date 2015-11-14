@@ -1,0 +1,12 @@
+appid: xxxxxxxxxxxxxxx
+appsecret: xxxxxxxxxxxxxxxxxxxxxxxxx
+user_access_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+pages:
+  747324745411005:
+    from: 103865773008399
+    name: 7 Day News Journal
+    last_synced_post: 0
+  560525547440696:
+    from: 114803668557265
+    name: Eleven Media Group
+    last_synced_post: 0

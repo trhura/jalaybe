@@ -1,0 +1,5 @@
+cron:
+  - description: facebook sync task
+    url: /sync
+    schedule: every 10 minutes
+    target: main
