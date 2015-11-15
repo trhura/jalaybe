@@ -27,8 +27,9 @@ def hello():
 
     outstr += "<h3> Pages </h3>"
     for page, details  in config['pages'].items():
-        outstr += "&nbsp;&nbsp;&nbsp;&nbsp;" + details['name']
-        outstr += " (last synced: " + str(details['last_synced_post']) + ")"
+        outstr += '&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.facebook.com/%s">%s</a>' %(page, details['name'])
+        outstr += ' (last synced: <a href="http://www.facebook.com/%s/posts/%s">%s</a>)' \
+                  %(details['from'], details['last_synced_post'], details['last_synced_post'])
         outstr += "<br/>"
 
     return outstr
@@ -70,9 +71,10 @@ def sync():
 
                     del post['id']
                     del post['message']
+                    post['description'] = post['description'].encode('utf8')
+                    post['name'] = post['name'].encode('utf8')
                     total_posts += 1
 
-                    post = {k: v.encode('utf8') for k, v in post.items()}
                     graph.put_wall_post(message=message, attachment=post)
 
             logging.info ("Synced %d posts for %s." %(total_posts, thispage['name']))
