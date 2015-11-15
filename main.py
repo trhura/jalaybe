@@ -16,14 +16,14 @@ def get_config(yamlfile):
 
 app = Flask(__name__)
 config = get_config('config.yaml')
-last_synced_time = datetime.now()
+recent_synced_time = datetime.now()
 
 @app.route('/')
 def hello():
     outstr = ""
     outstr += "<h3> Schedule </h3>"
     outstr += "&nbsp;&nbsp;&nbsp;&nbsp;current time: " + datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
-    outstr += "</br>&nbsp;&nbsp;&nbsp;&nbsp;last synced time: " + last_synced_time.strftime("%A, %d. %B %Y %I:%M%p")
+    outstr += "</br>&nbsp;&nbsp;&nbsp;&nbsp;last synced time: " + recent_synced_time.strftime("%A, %d. %B %Y %I:%M%p")
 
     outstr += "<h3> Pages </h3>"
     for page, details  in config['pages'].items():
@@ -47,50 +47,57 @@ def sync():
         if config['pages'].has_key(pageid):
             page_access_token = page['access_token']
             graph = facebook.GraphAPI(page_access_token)
-            get_postid = lambda x: int(x['id'].split('_')[1])
+            getpostid = lambda x: int(x['id'].split('_')[1])
+            gettime = lambda x: datetime.strptime(x[:-5], '%Y-%m-%dT%H:%M:%S')
 
             thispage = config['pages'][pageid]
             sourcepage = str(thispage['from'])
-            arguments = {'limit': 5, 'fields': 'link,name,picture,description,message'}
+            arguments = {'limit': 5, 'fields': 'link,name,picture,description,message,created_time'}
             response = graph.get_connections(sourcepage, 'feed', **arguments)
 
             total_posts = 0
             posts = response['data']
-            lastpostid = get_postid(posts[0])
+            last_synced_time = posts[0]['created_time']
+            last_synced_post = getpostid(posts[0])
             posts.reverse()
 
-            # For first run, just save the last postid skip posting
-            if thispage['last_synced_post'] != 0:
-                for post in posts:
-                    if get_postid(post) <= thispage['last_synced_post']:
-                        continue
+            # First run, get the last post time from destination page
+            if thispage['last_synced_time'] == 0:
+                arguments = {'limit': 1, 'fields': 'created_time'}
+                response = graph.get_connections(page['id'], 'feed', **arguments)
+                thispage['last_synced_time'] = response['data'][0]['created_time']
 
-                    # if postid is newer than last sycned share it
-                    message = converter.zg12uni51(post['message'])
-                    message = message.encode('utf8')
+            for post in posts:
+                if gettime(post['created_time']) <= gettime(thispage['last_synced_time']):
+                    continue
 
-                    if post.has_key('description'):
-                        post['description'] = post['description'].encode('utf8')
+                # if postid is newer than last sycned share it
+                message = converter.zg12uni51(post['message'])
+                message = message.encode('utf8')
 
-                    if not post.has_key('link'):
-                        post['link'] = 'https://www.facebook.com/%s/posts/%s' %(pageid, get_postid(post))
+                if post.has_key('description'):
+                    post['description'] = converter.zg12uni51(post['description']).encode('utf8')
 
-                    if post.has_key('name'):
-                        post['name'] = post['name'].encode('utf8')
-                    else:
-                        post['name'] = thispage['name']
+                if not post.has_key('link'):
+                    post['link'] = 'https://www.facebook.com/%s/posts/%s' %(pageid, getpostid(post))
 
-                    del post['id']
-                    del post['message']
-                    total_posts += 1
+                if post.has_key('name'):
+                    post['name'] = converter.zg12uni51(post['name']).encode('utf8')
+                else:
+                    post['name'] = thispage['name']
 
-                    graph.put_wall_post(message=message, attachment=post)
+                del post['id']
+                del post['message']
+                total_posts += 1
+
+                graph.put_wall_post(message=message, attachment=post)
 
             logging.info ("Synced %d posts for %s." %(total_posts, thispage['name']))
-            thispage['last_synced_post'] = lastpostid
+            thispage['last_synced_post'] = last_synced_post
+            thispage['last_synced_time'] = last_synced_time
 
-    global last_synced_time
-    last_synced_time = datetime.now()
+    global recent_synced_time
+    recent_synced_time = datetime.now()
     return 'ok', 200
 
 @app.errorhandler(404)
