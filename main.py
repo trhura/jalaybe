@@ -71,9 +71,9 @@ def sync():
 
                     del post['id']
                     del post['message']
-                    post['description'] = post['description'].encode('utf8')
-                    post['name'] = post['name'].encode('utf8')
                     total_posts += 1
+                    if post.has_key('description'):
+                        post['description'] = post['description'].encode('utf8')
 
                     graph.put_wall_post(message=message, attachment=post)
 
