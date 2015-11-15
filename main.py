@@ -1,9 +1,10 @@
 """`main` is the top level module for your Flask application."""
 
 # Import the Flask Framework
-import pytz
 import yaml
+import pytz
 import facebook
+import logging
 import converter
 from datetime import datetime
 from flask import Flask
@@ -47,28 +48,35 @@ def sync():
             graph = facebook.GraphAPI(page_access_token)
             get_postid = lambda x: int(x['id'].split('_')[1])
 
-            pagecfg = config['pages'][pageid]
-            sourcepage = str(pagecfg['from'])
-            resp = graph.get_connections(sourcepage, 'feed', limit=5,
-                                         fields='link,name,picture,description,message')
-            posts = resp['data']
+            thispage = config['pages'][pageid]
+            sourcepage = str(thispage['from'])
+            arguments = {'limit': 5, 'fields': 'link,name,picture,description,message'}
+            response = graph.get_connections(sourcepage, 'feed', **arguments)
+
+            total_posts = 0
+            posts = response['data']
             lastpostid = get_postid(posts[0])
             posts.reverse()
 
-            # For first run, just save the last postid
-            if pagecfg['last_synced_post'] != 0:
+            # For first run, just save the last postid skip posting
+            if thispage['last_synced_post'] != 0:
                 for post in posts:
-                    if get_postid(post) <= pagecfg['last_synced_post']:
+                    if get_postid(post) <= thispage['last_synced_post']:
                         continue
 
+                    # if postid is newer than last sycned share it
                     message = converter.zg12uni51(post['message'])
                     message = message.encode('utf8')
 
                     del post['id']
                     del post['message']
+                    total_posts += 1
+
+                    post = {k: v.encode('utf8') for k, v in post.items()}
                     graph.put_wall_post(message=message, attachment=post)
 
-            pagecfg['last_synced_post'] = lastpostid
+            logging.info ("Synced %d posts for %s." %(total_posts, thispage['name']))
+            thispage['last_synced_post'] = lastpostid
 
     last_synced_time = datetime.now()
     return 'ok', 200
