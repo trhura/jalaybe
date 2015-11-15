@@ -89,6 +89,7 @@ def sync():
             logging.info ("Synced %d posts for %s." %(total_posts, thispage['name']))
             thispage['last_synced_post'] = lastpostid
 
+    global last_synced_time
     last_synced_time = datetime.now()
     return 'ok', 200
 
