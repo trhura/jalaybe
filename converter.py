@@ -89,7 +89,7 @@ def zg12uni51(input_text=""):
     output_text = re.sub(u'(?<=(\u101d))(\u1040)(?=\s)?', u'\u101d', output_text, flags=re.M|re.U)
     output_text = re.sub(u'(?<=([\u1000-\u101c\u101e-\u102a\u102c\u102e-\u103d\u104c-\u109f\s]))(\u1047)', u'\u101b', output_text, flags=re.M|re.U)
     output_text = re.sub(u'(\u1047)(?=[\u1000-\u101c\u101e-\u102a\u102c\u102e-\u103d\u104c-\u109f\s])', u'\u101b', output_text, flags=re.M|re.U)
-    output_text = re.sub(u'((?:\u1031)?)([\u1000-\u1021])((?:\u1039[\u1000-\u1021])?)((?:[\u102d\u102e\u1032])?)([\u1036\u1037\u1038]{0,2})([\u103b-\u103c]{0,3})((?:[\u102f\u1030])?)([\u1036\u1037\u1038]{0,2})((?:[\u102d\u102e\u1032])?)', u'\\2\\3\\6\\1\\4\\9\\7\\5\\8', output_text, flags=re.M|re.U)
+    output_text = re.sub(u'((?:\u1031)?)([\u1000-\u1021])((?:\u1039[\u1000-\u1021])?)((?:[\u102d\u102e\u1032])?)([\u1036\u1037\u1038]{0,2})([\u103b\u103c\u103d\u103a]{0,3})((?:[\u102f\u1030])?)([\u1036\u1037\u1038]{0,2})((?:[\u102d\u102e\u1032])?)', u'\\2\\3\\6\\1\\4\\9\\7\\5\\8', output_text, flags=re.M|re.U)
     output_text = re.sub(u'\u1036\u102f', u'\u102f\u1036', output_text, flags=re.M|re.U)
     output_text = re.sub(u'(\u103a)(\u1037)', u'\\2\\1', output_text, flags=re.M|re.U)
     return output_text
