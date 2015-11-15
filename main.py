@@ -69,11 +69,20 @@ def sync():
                     message = converter.zg12uni51(post['message'])
                     message = message.encode('utf8')
 
+                    if post.has_key('description'):
+                        post['description'] = post['description'].encode('utf8')
+
+                    if not post.has_key('link'):
+                        post['link'] = 'https://www.facebook.com/%s/posts/%s' %(pageid, get_postid(post))
+
+                    if post.has_key('name'):
+                        post['name'] = post['name'].encode('utf8')
+                    else:
+                        post['name'] = thispage['name']
+
                     del post['id']
                     del post['message']
                     total_posts += 1
-                    if post.has_key('description'):
-                        post['description'] = post['description'].encode('utf8')
 
                     graph.put_wall_post(message=message, attachment=post)
 
