@@ -72,8 +72,9 @@ def sync():
                     continue
 
                 # if postid is newer than last sycned share it
-                message = converter.zg12uni51(post['message'])
-                message = message.encode('utf8')
+                message = None
+                if post.has_key('message'):
+                    message = converter.zg12uni51(post['message']).encode('utf8')
 
                 if post.has_key('description'):
                     post['description'] = converter.zg12uni51(post['description']).encode('utf8')
@@ -87,9 +88,8 @@ def sync():
                     post['name'] = thispage['name']
 
                 del post['id']
-                del post['message']
                 total_posts += 1
-
+                if post.has_key('message'): del post['message']
                 graph.put_wall_post(message=message, attachment=post)
 
             logging.info ("Synced %d posts for %s." %(total_posts, thispage['name']))
