@@ -52,7 +52,7 @@ def sync():
 
             thispage = config['pages'][pageid]
             sourcepage = str(thispage['from'])
-            arguments = {'limit': 5, 'fields': 'link,name,picture,description,message,created_time'}
+            arguments = {'limit': 2, 'fields': 'link,name,picture,description,message,created_time'}
             response = graph.get_connections(sourcepage, 'feed', **arguments)
 
             total_posts = 0

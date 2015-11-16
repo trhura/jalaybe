@@ -1,5 +1,5 @@
 cron:
   - description: facebook sync task
     url: /sync
-    schedule: every 10 minutes
+    schedule: every 5 minutes
     target: main
