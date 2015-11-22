@@ -72,7 +72,7 @@ def sync():
                     continue
 
                 # if postid is newer than last sycned share it
-                message = None
+                message = ''
                 if post.has_key('message'):
                     message = converter.zg12uni51(post['message']).encode('utf8')
 
