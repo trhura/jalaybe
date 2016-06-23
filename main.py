@@ -30,7 +30,7 @@ def hello():
 
     outstr += "<h3> Pages </h3>"
     for page in config['pages']:
-        outstr += '&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.facebook.com/%s">%s</a>' %(page, page['name'])
+        outstr += '&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.facebook.com/%s">%s</a>' %(page['from'], page['name'])
         outstr += '(last synced: <a href="http://www.facebook.com/%s/posts/%s">%s</a>)' \
                    %(page['from'], page['last_synced_post'], page['last_synced_post'])
         outstr += "<br/>"
