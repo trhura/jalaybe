@@ -7,3 +7,4 @@
 Flask==0.10
 pytz
 facebook-sdk
+requests-toolbelt

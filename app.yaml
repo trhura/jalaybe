@@ -36,3 +36,6 @@ handlers:
 #libraries:
 #- name: jinja2
 #  version: latest
+libraries:
+- name: ssl
+  version: latest
